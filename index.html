@@ -5,40 +5,201 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Éditeur ABC tactile</title>
   <style>
-    /* styles identiques à la version précédente */
-    * { box-sizing: border-box; user-select: none; }
-    body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 16px; }
-    .app { background: white; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); padding: 20px; max-width: 800px; width: 100%; }
-    h1 { text-align: center; font-size: 1.4rem; margin: 0 0 16px 0; color: #333; }
-    #abc-container { background: white; border: 2px solid #ddd; border-radius: 12px; overflow: hidden; touch-action: none; cursor: pointer; margin-bottom: 16px; position: relative; min-height: 150px; display: flex; justify-content: center; align-items: center; }
-    #abc-container svg { display: block; width: 100%; height: auto; background: white; }
-    .controls { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 16px; }
-    .controls button { flex: 1; min-width: 70px; padding: 10px 12px; border: 2px solid #ccc; border-radius: 30px; background: white; font-size: 1rem; font-weight: bold; color: #333; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
-    .controls button.active { border-color: #007bff; background: #007bff; color: white; }
-    .controls button:active { transform: scale(0.95); }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    .actions button { padding: 10px 20px; border: none; border-radius: 30px; background: #007bff; color: white; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; flex: 1; min-width: 80px; }
-    .actions button.reset { background: #dc3545; }
-    .actions button.reset:hover { background: #c82333; }
-    .actions button.abc { background: #28a745; }
-    .actions button.abc:hover { background: #218838; }
-    .info { text-align: center; font-size: 0.9rem; color: #555; margin-top: 12px; }
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: white; border-radius: 20px; padding: 24px; max-width: 600px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-    .modal h2 { margin-top: 0; text-align: center; color: #333; }
-    .modal textarea { flex: 1; min-height: 200px; font-family: 'Courier New', monospace; font-size: 0.9rem; padding: 12px; border: 2px solid #ddd; border-radius: 10px; resize: vertical; margin-bottom: 16px; background: #fafafa; }
-    .modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-    .modal .modal-actions button { padding: 10px 24px; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 1rem; }
-    .modal .modal-actions .close-btn { background: #6c757d; color: white; }
-    .modal .modal-actions .update-btn { background: #007bff; color: white; }
-    @media (max-width: 500px) { .controls button { min-width: 60px; padding: 8px 10px; font-size: 0.9rem; } }
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+    }
+    .app {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 20px;
+      max-width: 800px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      margin: 0 0 16px 0;
+      color: #333;
+    }
+    #abc-container {
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+      touch-action: none;
+      cursor: pointer;
+      margin-bottom: 16px;
+      position: relative;
+      min-height: 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #abc-container svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: white;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .controls button {
+      flex: 1;
+      min-width: 70px;
+      padding: 10px 12px;
+      border: 2px solid #ccc;
+      border-radius: 30px;
+      background: white;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+      transition: all 0.2s;
+      touch-action: manipulation;
+    }
+    .controls button.active {
+      border-color: #007bff;
+      background: #007bff;
+      color: white;
+    }
+    .controls button:active {
+      transform: scale(0.95);
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 30px;
+      background: #007bff;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      flex: 1;
+      min-width: 80px;
+    }
+    .actions button.reset {
+      background: #dc3545;
+    }
+    .actions button.reset:hover {
+      background: #c82333;
+    }
+    .actions button.abc {
+      background: #28a745;
+    }
+    .actions button.abc:hover {
+      background: #218838;
+    }
+    .info {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 12px;
+      min-height: 24px;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal h2 {
+      margin-top: 0;
+      text-align: center;
+      color: #333;
+    }
+    .modal textarea {
+      flex: 1;
+      min-height: 200px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      resize: vertical;
+      margin-bottom: 16px;
+      background: #fafafa;
+    }
+    .modal .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .modal .modal-actions button {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .modal .modal-actions .close-btn {
+      background: #6c757d;
+      color: white;
+    }
+    .modal .modal-actions .update-btn {
+      background: #007bff;
+      color: white;
+    }
+    @media (max-width: 500px) {
+      .controls button {
+        min-width: 60px;
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+    }
   </style>
 </head>
 <body>
 <div class="app">
   <h1>🎵 Éditeur ABC tactile</h1>
-  <div id="abc-container"><p style="color:#888;">Chargement de abcjs...</p></div>
+  <div id="abc-container">
+    <div style="text-align:center;color:#888;padding:20px;">
+      <div style="font-size:24px;margin-bottom:8px;">⏳</div>
+      Chargement de la bibliothèque musicale...
+    </div>
+  </div>
   <div class="controls">
     <button data-duration="quarter" class="active">♩ Noire</button>
     <button data-duration="half">𝅝 Blanche</button>
@@ -62,234 +223,262 @@
   </div>
 </div>
 
+<!-- Chargement direct depuis le CDN -->
+<script src="https://cdn.jsdelivr.net/npm/abcjs@6.4.0/dist/abcjs-basic-min.js"></script>
+
 <script>
   (function() {
-    // Fonction pour charger dynamiquement abcjs
-    function loadAbcjs(callback) {
-      var container = document.getElementById('abc-container');
-      var srcs = [
-        'https://cdn.jsdelivr.net/npm/abcjs@6.4.0/dist/abcjs-basic-min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.4.0/abcjs-basic-min.js'
-      ];
-      var loaded = false;
-      var attempts = 0;
-
-      function tryLoad() {
-        if (loaded || attempts >= srcs.length) {
-          if (!loaded) {
-            container.innerHTML = '<p style="color:red;">Impossible de charger abcjs. Veuillez vérifier votre connexion ou utiliser un serveur local.</p>';
-          }
-          return;
-        }
-        var script = document.createElement('script');
-        script.src = srcs[attempts];
-        script.onload = function() {
-          if (typeof abcjs !== 'undefined') {
-            loaded = true;
-            callback();
-          } else {
-            attempts++;
-            tryLoad();
-          }
-        };
-        script.onerror = function() {
-          attempts++;
-          tryLoad();
-        };
-        document.head.appendChild(script);
-      }
-      tryLoad();
+    // Vérifier si abcjs est chargé
+    if (typeof abcjs === 'undefined') {
+      document.getElementById('abc-container').innerHTML = 
+        '<div style="text-align:center;color:#d32f2f;padding:20px;">' +
+        '<div style="font-size:32px;margin-bottom:8px;">⚠️</div>' +
+        'Erreur : La bibliothèque abcjs n\'a pas pu être chargée.<br>' +
+        'Vérifiez votre connexion internet ou essayez un autre navigateur.' +
+        '</div>';
+      throw new Error('abcjs not loaded');
     }
 
-    // L'application démarre après chargement de abcjs
-    function initApp() {
-      if (typeof abcjs === 'undefined') {
-        document.getElementById('abc-container').innerHTML = '<p style="color:red;">abcjs n\'est pas disponible.</p>';
+    // ---------- État de l'application ----------
+    let notes = [];
+    let currentDuration = 'quarter';
+    let abcText = '';
+    let isRendering = false;
+
+    // ---------- Éléments DOM ----------
+    const container = document.getElementById('abc-container');
+    const info = document.getElementById('info');
+    const resetBtn = document.getElementById('resetBtn');
+    const abcBtn = document.getElementById('abcBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const abcTextarea = document.getElementById('abcTextarea');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalUpdateBtn = document.getElementById('modalUpdateBtn');
+    const durationButtons = document.querySelectorAll('.controls button[data-duration]');
+
+    // ---------- Fonctions ABC ----------
+    function buildAbc() {
+      const header = 'X:1\nM:4/4\nK:C clef=treble\n';
+      const body = notes.length ? '| ' + notes.join(' ') + ' |' : '| z4 |';
+      return header + body;
+    }
+
+    function getNoteFromY(y, svgHeight) {
+      // La portée occupe environ 70% de la hauteur du SVG
+      const topMargin = 0.15;
+      const bottomMargin = 0.85;
+      const relY = y / svgHeight;
+
+      if (relY < topMargin - 0.05 || relY > bottomMargin + 0.05) return null;
+
+      // Positions des 9 lignes/espaces (de E4 à F5)
+      const positions = [];
+      for (let i = 0; i <= 8; i++) {
+        positions.push(bottomMargin - i * 0.0875);
+      }
+
+      let minDist = Infinity;
+      let bestIndex = 0;
+      for (let i = 0; i < positions.length; i++) {
+        const dist = Math.abs(relY - positions[i]);
+        if (dist < minDist) {
+          minDist = dist;
+          bestIndex = i;
+        }
+      }
+
+      // Mapping des notes (de bas en haut)
+      const baseNotes = ['E', 'F', 'G', 'A', 'B', 'c', 'd', 'e', 'f'];
+      let note;
+
+      if (bestIndex < 0) {
+        // Notes graves (en dessous de la portée)
+        const graves = ['D', 'C', 'B,', 'A,', 'G,', 'F,', 'E,', 'D,'];
+        const idx = Math.abs(bestIndex) - 1;
+        note = idx < graves.length ? graves[idx] : 'C,';
+      } else if (bestIndex < baseNotes.length) {
+        note = baseNotes[bestIndex];
+      } else {
+        // Notes aiguës (au-dessus de la portée)
+        const aigues = ['g', 'a', 'b', "c'", "d'", "e'", "f'", "g'", "a'", "b'", "c''"];
+        const idx = bestIndex - baseNotes.length;
+        note = idx < aigues.length ? aigues[idx] : "c''";
+      }
+      return note;
+    }
+
+    function addNote(noteAbc) {
+      if (!noteAbc) return;
+      let durationSuffix = '';
+      switch (currentDuration) {
+        case 'half':   durationSuffix = '2'; break;
+        case 'eighth': durationSuffix = '/'; break;
+        default:       durationSuffix = '';  break;
+      }
+      notes.push(noteAbc + durationSuffix);
+      updateAndRender();
+    }
+
+    // ---------- Rendu ----------
+    function render() {
+      if (isRendering) return;
+      isRendering = true;
+
+      abcText = buildAbc();
+      try {
+        container.innerHTML = '';
+        
+        const renderParams = {
+          generateInline: true,
+          generateDownload: false,
+          generatePlayButton: false,
+          responsive: 'resize'
+        };
+
+        // Rendu avec abcjs
+        abcjs.renderAbc(container, abcText, renderParams);
+        
+        // Attacher les événements sur le SVG
+        setTimeout(attachSVGEvents, 150);
+        
+        info.textContent = notes.length + ' note(s) — Cliquez sur la portée pour ajouter';
+      } catch (e) {
+        console.error('Erreur de rendu ABC:', e);
+        container.innerHTML = '<div style="padding:20px;color:#d32f2f;text-align:center;">❌ Erreur de rendu: ' + e.message + '</div>';
+        info.textContent = 'Erreur de rendu, vérifiez le code ABC.';
+      }
+      isRendering = false;
+    }
+
+    function updateAndRender() {
+      render();
+    }
+
+    // ---------- Événements SVG ----------
+    function attachSVGEvents() {
+      const svg = container.querySelector('svg');
+      if (!svg) {
+        console.warn('SVG non trouvé, tentative de rattrapage...');
+        setTimeout(attachSVGEvents, 200);
         return;
       }
 
-      var notes = [];
-      var currentDuration = 'quarter';
-      var abcText = '';
-      var isRendering = false;
+      function handlePointer(e) {
+        e.preventDefault();
+        
+        const rect = svg.getBoundingClientRect();
+        const svgWidth = svg.viewBox ? svg.viewBox.baseVal.width : svg.width.baseVal.value;
+        const svgHeight = svg.viewBox ? svg.viewBox.baseVal.height : svg.height.baseVal.value;
 
-      var container = document.getElementById('abc-container');
-      var info = document.getElementById('info');
-      var resetBtn = document.getElementById('resetBtn');
-      var abcBtn = document.getElementById('abcBtn');
-      var modalOverlay = document.getElementById('modalOverlay');
-      var abcTextarea = document.getElementById('abcTextarea');
-      var modalCloseBtn = document.getElementById('modalCloseBtn');
-      var modalUpdateBtn = document.getElementById('modalUpdateBtn');
-      var durationButtons = document.querySelectorAll('.controls button[data-duration]');
-
-      function buildAbc() {
-        var header = 'X:1\nM:4/4\nK:C clef=treble\n';
-        var body = notes.length ? '| ' + notes.join(' ') + ' |' : '| z4 |';
-        return header + body;
-      }
-
-      function getNoteFromY(y, svgHeight) {
-        var topMargin = 0.15;
-        var bottomMargin = 0.85;
-        var relY = y / svgHeight;
-        if (relY < topMargin - 0.05 || relY > bottomMargin + 0.05) return null;
-        var positions = [];
-        for (var i = 0; i <= 8; i++) {
-          positions.push(bottomMargin - i * 0.0875);
-        }
-        var minDist = Infinity;
-        var bestIndex = 0;
-        for (var j = 0; j < positions.length; j++) {
-          var dist = Math.abs(relY - positions[j]);
-          if (dist < minDist) {
-            minDist = dist;
-            bestIndex = j;
-          }
-        }
-        var baseNotes = ['E', 'F', 'G', 'A', 'B', 'c', 'd', 'e', 'f'];
-        var note;
-        if (bestIndex < 0) {
-          var graves = ['D', 'C', 'B,', 'A,', 'G,', 'F,', 'E,', 'D,'];
-          var idx = Math.abs(bestIndex) - 1;
-          note = idx < graves.length ? graves[idx] : 'C,';
-        } else if (bestIndex < baseNotes.length) {
-          note = baseNotes[bestIndex];
+        let clientX, clientY;
+        if (e.touches) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
         } else {
-          var aigues = ['g', 'a', 'b', "c'", "d'", "e'", "f'", "g'", "a'", "b'", "c''"];
-          var idx2 = bestIndex - baseNotes.length;
-          note = idx2 < aigues.length ? aigues[idx2] : "c''";
+          clientX = e.clientX;
+          clientY = e.clientY;
         }
-        return note;
-      }
 
-      function addNote(noteAbc) {
-        if (!noteAbc) return;
-        var durationSuffix = '';
-        switch (currentDuration) {
-          case 'half':   durationSuffix = '2'; break;
-          case 'eighth': durationSuffix = '/'; break;
-          default:       durationSuffix = '';  break;
-        }
-        notes.push(noteAbc + durationSuffix);
-        updateAndRender();
-      }
+        const scaleX = svgWidth / rect.width;
+        const scaleY = svgHeight / rect.height;
 
-      function render() {
-        if (isRendering) return;
-        isRendering = true;
-        abcText = buildAbc();
-        try {
-          container.innerHTML = '';
-          var renderParams = {
-            generateInline: true,
-            generateDownload: false,
-            generatePlayButton: false,
-            responsive: 'resize'
-          };
-          abcjs.renderAbc(container, abcText, renderParams);
-          setTimeout(attachSVGEvents, 100);
-          info.textContent = notes.length + ' note(s) — Cliquez sur la portée pour ajouter';
-        } catch (e) {
-          console.error('Erreur de rendu ABC:', e);
-          container.innerHTML = '<div style="padding:20px;color:#666;">Erreur de rendu: ' + e.message + '</div>';
-          info.textContent = 'Erreur de rendu, vérifiez le code ABC.';
-        }
-        isRendering = false;
-      }
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
 
-      function updateAndRender() { render(); }
+        if (x < 0 || x > svgWidth || y < 0 || y > svgHeight) return;
 
-      function attachSVGEvents() {
-        var svg = container.querySelector('svg');
-        if (!svg) return;
-        function handlePointer(e) {
-          e.preventDefault();
-          var rect = svg.getBoundingClientRect();
-          var svgWidth = svg.viewBox ? svg.viewBox.baseVal.width : svg.width.baseVal.value;
-          var svgHeight = svg.viewBox ? svg.viewBox.baseVal.height : svg.height.baseVal.value;
-          var clientX, clientY;
-          if (e.touches) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-          } else {
-            clientX = e.clientX;
-            clientY = e.clientY;
-          }
-          var scaleX = svgWidth / rect.width;
-          var scaleY = svgHeight / rect.height;
-          var x = (clientX - rect.left) * scaleX;
-          var y = (clientY - rect.top) * scaleY;
-          if (x < 0 || x > svgWidth || y < 0 || y > svgHeight) return;
-          var note = getNoteFromY(y, svgHeight);
-          if (note) addNote(note);
-        }
-        if (svg._listener) {
-          svg.removeEventListener('click', svg._listener);
-          svg.removeEventListener('touchstart', svg._listener);
-        }
-        var listener = function(e) { handlePointer(e); };
-        svg.addEventListener('click', listener);
-        svg.addEventListener('touchstart', listener, { passive: false });
-        svg._listener = listener;
-      }
-
-      durationButtons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          durationButtons.forEach(function(b) { b.classList.remove('active'); });
-          this.classList.add('active');
-          currentDuration = this.dataset.duration;
-          var durationNames = { quarter: 'Noire', half: 'Blanche', eighth: 'Croche' };
-          info.textContent = 'Durée : ' + durationNames[currentDuration] + ' — Cliquez sur la portée';
-        });
-      });
-
-      resetBtn.addEventListener('click', function() {
-        notes = [];
-        updateAndRender();
-        info.textContent = 'Notes effacées — Cliquez sur la portée pour ajouter';
-      });
-
-      function openModal() {
-        abcTextarea.value = abcText;
-        modalOverlay.classList.add('open');
-      }
-      function closeModal() { modalOverlay.classList.remove('open'); }
-      function updateFromModal() {
-        var newAbc = abcTextarea.value;
-        var match = newAbc.match(/\|\s*(.*?)\s*\|/);
-        if (match) {
-          var body = match[1].trim();
-          notes = (body === 'z4' || body === '') ? [] : body.split(/\s+/).filter(function(s) { return s.length > 0; });
-          updateAndRender();
-          closeModal();
-        } else {
-          alert('Format ABC invalide. Conservez la structure X:1 M:4/4 K:C | ... |');
+        const note = getNoteFromY(y, svgHeight);
+        if (note) {
+          addNote(note);
         }
       }
-      abcBtn.addEventListener('click', openModal);
-      modalCloseBtn.addEventListener('click', closeModal);
-      modalUpdateBtn.addEventListener('click', updateFromModal);
-      modalOverlay.addEventListener('click', function(e) {
-        if (e.target === modalOverlay) closeModal();
-      });
 
-      // Initialisation
-      notes = [];
-      render();
+      // Nettoyer les anciens écouteurs
+      if (svg._listener) {
+        svg.removeEventListener('click', svg._listener);
+        svg.removeEventListener('touchstart', svg._listener);
+      }
 
-      var resizeTimer;
-      window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() { render(); }, 300);
-      });
-
-      setTimeout(attachSVGEvents, 500);
+      const listener = function(e) {
+        handlePointer(e);
+      };
+      
+      svg.addEventListener('click', listener);
+      svg.addEventListener('touchstart', listener, { passive: false });
+      svg._listener = listener;
     }
 
-    // Lancer le chargement de abcjs
-    loadAbcjs(initApp);
+    // ---------- Gestion des boutons ----------
+    durationButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        durationButtons.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentDuration = this.dataset.duration;
+        const durationNames = { quarter: 'Noire', half: 'Blanche', eighth: 'Croche' };
+        info.textContent = 'Durée : ' + durationNames[currentDuration] + ' — Cliquez sur la portée';
+      });
+    });
+
+    resetBtn.addEventListener('click', function() {
+      notes = [];
+      updateAndRender();
+      info.textContent = 'Notes effacées — Cliquez sur la portée pour ajouter';
+    });
+
+    // ---------- Modal ABC ----------
+    function openModal() {
+      abcTextarea.value = abcText;
+      modalOverlay.classList.add('open');
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+    }
+
+    function updateFromModal() {
+      const newAbc = abcTextarea.value;
+      const match = newAbc.match(/\|\s*(.*?)\s*\|/);
+      if (match) {
+        const body = match[1].trim();
+        if (body === 'z4' || body === '') {
+          notes = [];
+        } else {
+          notes = body.split(/\s+/).filter(s => s.length > 0);
+        }
+        updateAndRender();
+        closeModal();
+      } else {
+        alert('Format ABC invalide. Veuillez conserver la structure X:1 M:4/4 K:C | ... |');
+      }
+    }
+
+    abcBtn.addEventListener('click', openModal);
+    modalCloseBtn.addEventListener('click', closeModal);
+    modalUpdateBtn.addEventListener('click', updateFromModal);
+    modalOverlay.addEventListener('click', function(e) {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    // ---------- Initialisation ----------
+    notes = [];
+    render();
+
+    // Gérer le redimensionnement
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        render();
+      }, 300);
+    });
+
+    // Tentative supplémentaire d'attachement des événements
+    setTimeout(attachSVGEvents, 500);
+
+    console.log('✅ Éditeur ABC tactile initialisé avec succès');
+    console.log('ℹ️ Version abcjs:', abcjs.version);
+
   })();
 </script>
 </body>
-  </html>
+</html>
